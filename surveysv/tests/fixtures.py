@@ -38,8 +38,8 @@ def option(question):
 def option_list(question):
     return Option.objects.bulk_create(
         [
-            Option(title="Red", value="red", question=question, order=1),
-            Option(title="Blue", value="blue", question=question, order=2),
-            Option(title="Green", value="green", question=question, order=3),
+            Option(title="Red", value="red", question=question),
+            Option(title="Blue", value="blue", question=question),
+            Option(title="Green", value="green", question=question),
         ]
     )
