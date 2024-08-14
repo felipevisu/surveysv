@@ -7,7 +7,7 @@ from surveysv.surveys.models import Condition
 class ConditionSerializer(serializers.ModelSerializer):
     class Meta:
         model = Condition
-        fields = ["id", "primary_question", "conditional_question", "operator", "value"]
+        fields = ["id", "primary_question", "operator", "value"]
 
     def validate_primary_question(self, value):
         if value.type not in ["SELECT", "MULTIPLE_CHOICE"]:

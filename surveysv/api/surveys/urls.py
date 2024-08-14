@@ -21,7 +21,7 @@ urlpatterns = [
     path("<int:pk>/update/", SurveyUpdateAPIView.as_view(), name="survey-update"),
     path("<int:pk>/delete/", SurveyDeleteAPIView.as_view(), name="survey-delete"),
     path(
-        "questions/create/",
+        "questions/<int:survey_pk>/create/",
         SurveyQuestionCreateAPIView.as_view(),
         name="question-create",
     ),
@@ -36,7 +36,7 @@ urlpatterns = [
         name="question-delete",
     ),
     path(
-        "conditions/create/",
+        "conditions/<int:question_pk>/create/",
         ConditionCreateAPIView.as_view(),
         name="condition-create",
     ),
@@ -50,7 +50,11 @@ urlpatterns = [
         ConditionDeleteAPIView.as_view(),
         name="condition-delete",
     ),
-    path("options/create/", OptionCreateAPIView.as_view(), name="option-create"),
+    path(
+        "options/<int:question_pk>/create/",
+        OptionCreateAPIView.as_view(),
+        name="option-create",
+    ),
     path(
         "options/<int:pk>/update/", OptionUpdateAPIView.as_view(), name="option-update"
     ),

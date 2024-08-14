@@ -30,7 +30,6 @@ class SurveyQuestionCreateSerializer(serializers.ModelSerializer):
     class Meta:
         model = SurveyQuestion
         fields = [
-            "survey",
             "body",
             "type",
             "required",

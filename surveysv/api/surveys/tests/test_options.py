@@ -12,11 +12,12 @@ def test_create_option(api_client, user, question):
     data = {
         "title": "New Option",
         "value": "new_option_value",
-        "question": question.id,
     }
 
     # Send a POST request to create the option
-    response = api_client.post(reverse("option-create"), data, format="json")
+    response = api_client.post(
+        reverse("option-create", args=[question.id]), data, format="json"
+    )
 
     # Assert the response status code is 201 (Created)
     assert response.status_code == 201

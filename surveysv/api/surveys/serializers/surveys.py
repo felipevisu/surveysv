@@ -10,9 +10,7 @@ class SurveyCreateSerializer(serializers.ModelSerializer):
         fields = ["id", "title"]
 
     def create(self, validated_data):
-
         survey = Survey.objects.create(**validated_data)
-
         return survey
 
 

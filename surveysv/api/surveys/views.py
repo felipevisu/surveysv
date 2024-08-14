@@ -1,4 +1,5 @@
 from rest_framework import generics, status
+from rest_framework.exceptions import ValidationError
 from rest_framework.response import Response
 
 from ...surveys.models import Condition, Option, Question, Survey, SurveyQuestion
@@ -32,6 +33,16 @@ class SurveyQuestionCreateAPIView(generics.CreateAPIView):
     queryset = SurveyQuestion.objects.all()
     serializer_class = SurveyQuestionCreateSerializer
 
+    def perform_create(self, serializer):
+        survey_id = self.kwargs["survey_pk"]  # Extract survey primary key from the URL
+        try:
+            survey = Survey.objects.get(pk=survey_id)
+        except Survey.DoesNotExist:
+            raise ValidationError(f"Survey with id {survey_id} does not exist.")
+
+        # Pass the survey instance to the serializer
+        serializer.save(survey=survey)
+
 
 class QuestionUpdateAPIView(generics.UpdateAPIView):
     queryset = Question.objects.all()
@@ -47,6 +58,18 @@ class QuestionDeleteAPIView(generics.DestroyAPIView):
 class OptionCreateAPIView(generics.CreateAPIView):
     queryset = Option.objects.all()
     serializer_class = OptionSerializer
+
+    def perform_create(self, serializer):
+        question_id = self.kwargs[
+            "question_pk"
+        ]  # Extract survey primary key from the URL
+        try:
+            question = Question.objects.get(pk=question_id)
+        except Question.DoesNotExist:
+            raise ValidationError(f"Question with id {question_id} does not exist.")
+
+        # Pass the survey instance to the serializer
+        serializer.save(question=question)
 
 
 class OptionUpdateAPIView(generics.UpdateAPIView):
@@ -76,6 +99,18 @@ class OptionBulkDeleteAPIView(generics.GenericAPIView):
 class ConditionCreateAPIView(generics.CreateAPIView):
     queryset = Condition.objects.all()
     serializer_class = ConditionSerializer
+
+    def perform_create(self, serializer):
+        question_id = self.kwargs[
+            "question_pk"
+        ]  # Extract survey primary key from the URL
+        try:
+            question = Question.objects.get(pk=question_id)
+        except Question.DoesNotExist:
+            raise ValidationError(f"Question with id {question_id} does not exist.")
+
+        # Pass the survey instance to the serializer
+        serializer.save(conditional_question=question)
 
 
 class ConditionUpdateAPIView(generics.UpdateAPIView):

@@ -10,7 +10,6 @@ def test_create_survey_question_with_options(api_client, user, survey):
 
     # Prepare the data for creating a new question linked to the survey
     data = {
-        "survey": survey.id,
         "body": "What is your favorite color?",
         "type": "MULTIPLE_CHOICE",
         "required": True,
@@ -23,7 +22,9 @@ def test_create_survey_question_with_options(api_client, user, survey):
     }
 
     # Send a POST request to create the survey question with options
-    response = api_client.post(reverse("question-create"), data, format="json")
+    response = api_client.post(
+        reverse("question-create", args=[survey.id]), data, format="json"
+    )
 
     # Assert the response status code is 201 (Created)
     assert response.status_code == 201
@@ -61,7 +62,6 @@ def test_create_survey_question_with_conditions(
 
     # Prepare the data for creating a new question linked to the survey, with conditions
     data = {
-        "survey": survey.id,
         "body": "Why do you like red?",
         "type": "MULTIPLE_CHOICE",
         "required": True,
@@ -80,7 +80,9 @@ def test_create_survey_question_with_conditions(
     }
 
     # Send a POST request to create the survey question with options and conditions
-    response = api_client.post(reverse("question-create"), data, format="json")
+    response = api_client.post(
+        reverse("question-create", args=[survey.id]), data, format="json"
+    )
 
     assert Question.objects.count() == 2  # Original primary question + new question
     assert Option.objects.count() == 5

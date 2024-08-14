@@ -14,14 +14,15 @@ def test_create_condition(api_client, user, question, question_2):
 
     # Prepare the data for creating a new condition
     data = {
-        "conditional_question": conditional_question.id,
         "primary_question": primary_question.id,
         "operator": "IS_EQUAL",
         "value": "blue",
     }
 
     # Send a POST request to create the condition
-    response = api_client.post(reverse("condition-create"), data, format="json")
+    response = api_client.post(
+        reverse("condition-create", args=[conditional_question.id]), data, format="json"
+    )
 
     # Assert the response status code is 201 (Created)
     assert response.status_code == 201
@@ -42,7 +43,6 @@ def test_update_condition(api_client, user, condition):
     # Prepare the data to update the condition
     data = {
         "primary_question": condition.primary_question.id,
-        "conditional_question": condition.conditional_question.id,
         "operator": "IS_DIFERENT",
         "value": "red",
     }
