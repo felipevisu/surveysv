@@ -26,7 +26,7 @@ class Option(OrderedModel):
     question = models.ForeignKey(
         Question, related_name="options", on_delete=models.CASCADE
     )
-    amount = models.PositiveIntegerField(blank=True, null=True)
+    goal = models.PositiveIntegerField(blank=True, null=True)
 
     def __str__(self) -> str:
         return self.title

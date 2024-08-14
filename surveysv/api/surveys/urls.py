@@ -36,17 +36,17 @@ urlpatterns = [
         name="question-delete",
     ),
     path(
-        "questions/<int:pk>/conditions/create/",
+        "conditions/create/",
         ConditionCreateAPIView.as_view(),
         name="condition-create",
     ),
     path(
-        "questions/<int:question_pk>/conditions/<int:pk>/update/",
+        "conditions/<int:pk>/update/",
         ConditionUpdateAPIView.as_view(),
         name="condition-update",
     ),
     path(
-        "questions/<int:question_pk>/conditions/<int:pk>/delete/",
+        "conditions/<int:pk>/delete/",
         ConditionDeleteAPIView.as_view(),
         name="condition-delete",
     ),

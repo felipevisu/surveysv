@@ -2,7 +2,7 @@ import pytest
 from django.contrib.auth.models import User
 from rest_framework.test import APIClient
 
-from surveysv.surveys.models import Option, Question, Survey
+from surveysv.surveys.models import Condition, Option, Question, Survey
 
 
 @pytest.fixture
@@ -24,6 +24,23 @@ def survey():
 def question():
     return Question.objects.create(
         body="What is your favorite color?", type="MULTIPLE_CHOICE", required=True
+    )
+
+
+@pytest.fixture
+def question_2():
+    return Question.objects.create(
+        body="What is your favorite movie?", type="MULTIPLE_CHOICE", required=True
+    )
+
+
+@pytest.fixture
+def condition(question, question_2):
+    return Condition.objects.create(
+        primary_question=question,
+        conditional_question=question_2,
+        operator="IS_EQUAL",
+        value="blue",
     )
 
 
