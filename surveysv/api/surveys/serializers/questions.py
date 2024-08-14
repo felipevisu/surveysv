@@ -12,7 +12,7 @@ class ConditionSerializer(serializers.ModelSerializer):
 class OptionCreateSerializer(serializers.ModelSerializer):
     class Meta:
         model = Option
-        fields = ["title", "value"]
+        fields = ["title", "value", "goal"]
 
 
 class SurveyQuestionCreateSerializer(serializers.ModelSerializer):
@@ -20,6 +20,9 @@ class SurveyQuestionCreateSerializer(serializers.ModelSerializer):
     type = serializers.CharField(source="question.type", write_only=True)
     required = serializers.BooleanField(
         source="question.required", write_only=True, required=False
+    )
+    reusable = serializers.BooleanField(
+        source="question.reusable", write_only=True, required=False
     )
     options = OptionCreateSerializer(many=True, write_only=True, required=False)
     conditions = ConditionSerializer(many=True, write_only=True, required=False)
@@ -31,6 +34,7 @@ class SurveyQuestionCreateSerializer(serializers.ModelSerializer):
             "body",
             "type",
             "required",
+            "reusable",
             "order",
             "page_number",
             "options",
@@ -75,7 +79,7 @@ class QuestionUpdateSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Question
-        fields = ["id", "body", "type", "required"]
+        fields = ["id", "body", "type", "required", "reusable"]
 
     def update(self, instance, validated_data):
         # Update the instance fields with the validated data

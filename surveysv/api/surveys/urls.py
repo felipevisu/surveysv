@@ -1,6 +1,9 @@
 from django.urls import path
 
 from .views import (
+    ConditionCreateAPIView,
+    ConditionDeleteAPIView,
+    ConditionUpdateAPIView,
     OptionBulkDeleteAPIView,
     OptionCreateAPIView,
     OptionDeleteAPIView,
@@ -31,6 +34,21 @@ urlpatterns = [
         "questions/<int:pk>/delete/",
         QuestionDeleteAPIView.as_view(),
         name="question-delete",
+    ),
+    path(
+        "questions/<int:pk>/conditions/create/",
+        ConditionCreateAPIView.as_view(),
+        name="condition-create",
+    ),
+    path(
+        "questions/<int:question_pk>/conditions/<int:pk>/update/",
+        ConditionUpdateAPIView.as_view(),
+        name="condition-update",
+    ),
+    path(
+        "questions/<int:question_pk>/conditions/<int:pk>/delete/",
+        ConditionDeleteAPIView.as_view(),
+        name="condition-delete",
     ),
     path("options/create/", OptionCreateAPIView.as_view(), name="option-create"),
     path(

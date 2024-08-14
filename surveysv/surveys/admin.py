@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from .models import Condition, Goal, Option, Question, Survey, SurveyQuestion
+from .models import Condition, Option, Question, Survey, SurveyQuestion
 
 
 class OptionInline(admin.TabularInline):
@@ -14,15 +14,10 @@ class ConditionInline(admin.TabularInline):
     extra = 0
 
 
-class GoalInline(admin.TabularInline):
-    model = Goal
-    extra = 0
-
-
 @admin.register(Question)
 class QuestionAdmin(admin.ModelAdmin):
     list_display = ("body", "type", "required")
-    inlines = [OptionInline, ConditionInline, GoalInline]
+    inlines = [OptionInline, ConditionInline]
 
 
 class SurveyQuestionInline(admin.TabularInline):

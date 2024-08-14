@@ -1,8 +1,9 @@
 from rest_framework import generics, status
 from rest_framework.response import Response
 
-from ...surveys.models import Option, Question, Survey, SurveyQuestion
+from ...surveys.models import Condition, Option, Question, Survey, SurveyQuestion
 from .serializers import (
+    ConditionSerializer,
     OptionBulkDeleteSerializer,
     OptionSerializer,
     QuestionUpdateSerializer,
@@ -70,3 +71,19 @@ class OptionBulkDeleteAPIView(generics.GenericAPIView):
         deleted, _ = Option.objects.filter(id__in=option_ids).delete()
 
         return Response({"deleted": deleted}, status=status.HTTP_204_NO_CONTENT)
+
+
+class ConditionCreateAPIView(generics.CreateAPIView):
+    queryset = Condition.objects.all()
+    serializer_class = ConditionSerializer
+
+
+class ConditionUpdateAPIView(generics.UpdateAPIView):
+    queryset = Condition.objects.all()
+    serializer_class = ConditionSerializer
+    lookup_field = "pk"
+
+
+class ConditionDeleteAPIView(generics.DestroyAPIView):
+    queryset = Condition.objects.all()
+    lookup_field = "pk"

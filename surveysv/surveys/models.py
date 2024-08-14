@@ -14,6 +14,7 @@ class Question(models.Model):
     body = models.TextField()
     type = models.CharField(choices=QuestionType.CHOICES)
     required = models.BooleanField(blank=True, null=True)
+    reusable = models.BooleanField(blank=True, null=True, default=False)
 
     def __str__(self) -> str:
         return self.body
@@ -25,6 +26,7 @@ class Option(OrderedModel):
     question = models.ForeignKey(
         Question, related_name="options", on_delete=models.CASCADE
     )
+    amount = models.PositiveIntegerField(blank=True, null=True)
 
     def __str__(self) -> str:
         return self.title
@@ -53,20 +55,6 @@ class Condition(models.Model):
     )
     operator = models.CharField(max_length=50, choices=Operator.CHOICES)
     value = models.TextField()
-
-
-class Goal(models.Model):
-    question = models.ForeignKey(
-        Question, related_name="goals", on_delete=models.CASCADE
-    )
-    value = models.ForeignKey(Option, related_name="goals", on_delete=models.CASCADE)
-    amount = models.PositiveIntegerField()
-
-    def __str__(self) -> str:
-        return self.question.body
-
-    class Meta:
-        unique_together = [("question", "value")]
 
 
 class Survey(models.Model):
