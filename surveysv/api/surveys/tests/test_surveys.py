@@ -1,7 +1,48 @@
 import pytest
 from django.urls import reverse
 
-from surveysv.surveys.models import Survey
+from surveysv.surveys.models import Question, Survey, SurveyQuestion
+
+
+@pytest.mark.django_db
+def test_survey_list_with_question_count(api_client, user):
+    api_client.force_authenticate(user=user)
+
+    # Create a few surveys
+    survey1 = Survey.objects.create(title="Survey 1")
+    survey2 = Survey.objects.create(title="Survey 2")
+
+    # Create questions associated with the surveys
+    question1 = Question.objects.create(
+        body="Question 1", type="MULTIPLE_CHOICE", required=True
+    )
+    question2 = Question.objects.create(body="Question 2", type="TEXT", required=True)
+    SurveyQuestion.objects.create(survey=survey1, question=question1)
+    SurveyQuestion.objects.create(survey=survey1, question=question2)
+    SurveyQuestion.objects.create(survey=survey2, question=question1)
+
+    # Send a GET request to list the surveys
+    response = api_client.get(reverse("survey-list"))
+
+    # Assert the response status code is 200 (OK)
+    assert response.status_code == 200
+
+    # Check the response data
+    response_data = response.json()
+
+    assert len(response_data["results"]) == 2
+
+    survey1_data = response_data["results"][0]
+    survey2_data = response_data["results"][1]
+
+    # Verify the question counts
+    assert survey1_data["question_count"] == 2
+    assert survey2_data["question_count"] == 1
+
+    # Verify other fields
+    assert survey1_data["title"] == "Survey 1"
+    assert "created" in survey1_data
+    assert "updated" in survey1_data
 
 
 @pytest.mark.django_db
