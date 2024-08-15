@@ -1,6 +1,8 @@
 from django.db import models
 from ordered_model.models import OrderedModel
 
+from ..core.models import ModelWithDates
+
 
 class QuestionType:
     MULTIPLE_CHOICE = "MULTIPLE_CHOICE"
@@ -10,7 +12,7 @@ class QuestionType:
     CHOICES = [(MULTIPLE_CHOICE, "Multiple Choice"), (SELECT, "Select"), (TEXT, "Text")]
 
 
-class Question(models.Model):
+class Question(ModelWithDates):
     body = models.TextField()
     type = models.CharField(choices=QuestionType.CHOICES)
     required = models.BooleanField(blank=True, null=True)
@@ -57,7 +59,7 @@ class Condition(models.Model):
     value = models.TextField()
 
 
-class Survey(models.Model):
+class Survey(ModelWithDates):
     title = models.CharField(max_length=255)
     questions = models.ManyToManyField(Question, through="SurveyQuestion")
 

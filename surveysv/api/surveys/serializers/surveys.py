@@ -3,6 +3,14 @@ from rest_framework import serializers
 from surveysv.surveys.models import Survey
 
 
+class SurveyListSerializer(serializers.ModelSerializer):
+    question_count = serializers.IntegerField()
+
+    class Meta:
+        model = Survey
+        fields = ["id", "title", "created", "updated", "question_count"]
+
+
 class SurveyCreateSerializer(serializers.ModelSerializer):
 
     class Meta:

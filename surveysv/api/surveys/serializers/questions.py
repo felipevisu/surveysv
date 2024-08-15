@@ -80,7 +80,7 @@ class QuestionUpdateSerializer(serializers.ModelSerializer):
         model = Question
         fields = ["id", "body", "type", "required", "reusable"]
 
-    def update(self, instance, validated_data):
+    def update(self, instance: Question, validated_data):
         # Update the instance fields with the validated data
         for attr, value in validated_data.items():
             setattr(instance, attr, value)

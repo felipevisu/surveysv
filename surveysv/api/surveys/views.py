@@ -1,4 +1,5 @@
-from rest_framework import generics, status
+from django.db.models import Count
+from rest_framework import filters, generics, status
 from rest_framework.exceptions import ValidationError
 from rest_framework.response import Response
 
@@ -9,9 +10,21 @@ from .serializers import (
     OptionSerializer,
     QuestionUpdateSerializer,
     SurveyCreateSerializer,
+    SurveyListSerializer,
     SurveyQuestionCreateSerializer,
     SurveyUpdateSerializer,
 )
+
+
+class SurveyListAPIView(generics.ListAPIView):
+    queryset = Survey.objects.all()
+    serializer_class = SurveyListSerializer
+    filter_backends = [filters.OrderingFilter]
+    ordering_fields = ["created", "title"]
+    ordering = ["created"]
+
+    def get_queryset(self):
+        return Survey.objects.annotate(question_count=Count("surveyquestion"))
 
 
 class SurveyCreateAPIView(generics.CreateAPIView):
@@ -33,7 +46,7 @@ class SurveyQuestionCreateAPIView(generics.CreateAPIView):
     queryset = SurveyQuestion.objects.all()
     serializer_class = SurveyQuestionCreateSerializer
 
-    def perform_create(self, serializer):
+    def perform_create(self, serializer: SurveyQuestionCreateSerializer):
         survey_id = self.kwargs["survey_pk"]  # Extract survey primary key from the URL
         try:
             survey = Survey.objects.get(pk=survey_id)
@@ -59,7 +72,7 @@ class OptionCreateAPIView(generics.CreateAPIView):
     queryset = Option.objects.all()
     serializer_class = OptionSerializer
 
-    def perform_create(self, serializer):
+    def perform_create(self, serializer: OptionSerializer):
         question_id = self.kwargs[
             "question_pk"
         ]  # Extract survey primary key from the URL
@@ -100,7 +113,7 @@ class ConditionCreateAPIView(generics.CreateAPIView):
     queryset = Condition.objects.all()
     serializer_class = ConditionSerializer
 
-    def perform_create(self, serializer):
+    def perform_create(self, serializer: ConditionSerializer):
         question_id = self.kwargs[
             "question_pk"
         ]  # Extract survey primary key from the URL

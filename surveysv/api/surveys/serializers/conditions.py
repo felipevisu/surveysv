@@ -1,7 +1,7 @@
 from rest_framework import serializers
 from rest_framework.exceptions import ValidationError
 
-from surveysv.surveys.models import Condition
+from surveysv.surveys.models import Condition, Question
 
 
 class ConditionSerializer(serializers.ModelSerializer):
@@ -9,14 +9,14 @@ class ConditionSerializer(serializers.ModelSerializer):
         model = Condition
         fields = ["id", "primary_question", "operator", "value"]
 
-    def validate_primary_question(self, value):
+    def validate_primary_question(self, value: Question):
         if value.type not in ["SELECT", "MULTIPLE_CHOICE"]:
             raise ValidationError(
                 "Primary question must be of type 'SELECT' or 'MULTIPLE_CHOICE'."
             )
         return value
 
-    def update(self, instance, validated_data):
+    def update(self, instance: Condition, validated_data):
         # Ensure the primary question is of a valid type
         primary_question = validated_data.get(
             "primary_question", instance.primary_question
