@@ -23,7 +23,7 @@ urlpatterns = [
         name="question-delete",
     ),
     path(
-        "conditions/<int:question_pk>/create/",
+        "/conditions/<int:survey_pk>/create/",
         views.ConditionCreateAPIView.as_view(),
         name="condition-create",
     ),

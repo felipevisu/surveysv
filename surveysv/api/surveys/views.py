@@ -5,7 +5,8 @@ from rest_framework.response import Response
 
 from ...surveys.models import Condition, Option, Question, Survey, SurveyQuestion
 from .serializers import (
-    ConditionSerializer,
+    ConditionCreateSerializer,
+    ConditionUpdateSerializer,
     OptionBulkDeleteSerializer,
     OptionSerializer,
     QuestionUpdateSerializer,
@@ -111,24 +112,17 @@ class OptionBulkDeleteAPIView(generics.GenericAPIView):
 
 class ConditionCreateAPIView(generics.CreateAPIView):
     queryset = Condition.objects.all()
-    serializer_class = ConditionSerializer
+    serializer_class = ConditionCreateSerializer
 
-    def perform_create(self, serializer: ConditionSerializer):
-        question_id = self.kwargs[
-            "question_pk"
-        ]  # Extract survey primary key from the URL
-        try:
-            question = Question.objects.get(pk=question_id)
-        except Question.DoesNotExist:
-            raise ValidationError(f"Question with id {question_id} does not exist.")
-
-        # Pass the survey instance to the serializer
-        serializer.save(conditional_question=question)
+    def get_serializer_context(self):
+        context = super().get_serializer_context()
+        context["survey_pk"] = self.kwargs["survey_pk"]
+        return context
 
 
 class ConditionUpdateAPIView(generics.UpdateAPIView):
     queryset = Condition.objects.all()
-    serializer_class = ConditionSerializer
+    serializer_class = ConditionUpdateSerializer
     lookup_field = "pk"
 
 

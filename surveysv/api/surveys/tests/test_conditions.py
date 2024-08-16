@@ -2,26 +2,31 @@ import pytest
 from django.urls import reverse
 from rest_framework.test import APIClient
 
-from surveysv.surveys.models import Condition, Question
+from surveysv.surveys.models import Condition, Question, Survey
 
 
 @pytest.mark.django_db
-def test_create_condition(api_client, user, question, question_2):
+def test_create_condition(
+    api_client, user, survey: Survey, question: Question, question_2: Question
+):
     api_client.force_authenticate(user=user)
 
     primary_question = question
     conditional_question = question_2
 
+    survey.questions.add(primary_question, conditional_question)
+
     # Prepare the data for creating a new condition
     data = {
         "primary_question": primary_question.id,
+        "conditional_question": conditional_question.id,
         "operator": "IS_EQUAL",
         "value": "blue",
     }
 
     # Send a POST request to create the condition
     response = api_client.post(
-        reverse("condition-create", args=[conditional_question.id]), data, format="json"
+        reverse("condition-create", args=[survey.id]), data, format="json"
     )
 
     # Assert the response status code is 201 (Created)
@@ -37,12 +42,43 @@ def test_create_condition(api_client, user, question, question_2):
 
 
 @pytest.mark.django_db
+def test_create_condition_with_questions_not_in_the_survey(
+    api_client, user, survey, question, question_2
+):
+    api_client.force_authenticate(user=user)
+
+    primary_question = question
+    conditional_question = question_2
+
+    # Prepare the data for creating a new condition
+    data = {
+        "primary_question": primary_question.id,
+        "conditional_question": conditional_question.id,
+        "operator": "IS_EQUAL",
+        "value": "blue",
+    }
+
+    # Send a POST request to create the condition
+    response = api_client.post(
+        reverse("condition-create", args=[survey.id]), data, format="json"
+    )
+
+    # Assert the response status code is 400 (Error)
+    assert response.status_code == 400
+    content = response.json()
+    error = content["non_field_errors"][0]
+    message = (
+        "Primary question What is your favorite color? is not assigned to survey 2."
+    )
+    assert error == message
+
+
+@pytest.mark.django_db
 def test_update_condition(api_client, user, condition):
     api_client.force_authenticate(user=user)
 
     # Prepare the data to update the condition
     data = {
-        "primary_question": condition.primary_question.id,
         "operator": "IS_DIFERENT",
         "value": "red",
     }
@@ -51,7 +87,6 @@ def test_update_condition(api_client, user, condition):
     response = api_client.put(
         reverse("condition-update", args=[condition.id]), data, format="json"
     )
-    print(response.content)
 
     # Assert the response status code is 200 (OK)
     assert response.status_code == 200
