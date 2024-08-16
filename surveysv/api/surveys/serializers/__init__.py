@@ -1,5 +1,9 @@
 from .conditions import ConditionCreateSerializer, ConditionUpdateSerializer
-from .options import OptionBulkDeleteSerializer, OptionSerializer
+from .options import (
+    OptionBulkDeleteSerializer,
+    OptionCreateSerializer,
+    OptionUpdateSerializer,
+)
 from .questions import QuestionUpdateSerializer, SurveyQuestionCreateSerializer
 from .surveys import (
     SurveyCreateSerializer,
@@ -11,8 +15,8 @@ __all__ = [
     "ConditionCreateSerializer",
     "ConditionUpdateSerializer",
     "OptionBulkDeleteSerializer",
-    "OptionDeleteSerializer",
-    "OptionSerializer",
+    "OptionCreateSerializer",
+    "OptionUpdateSerializer",
     "QuestionUpdateSerializer",
     "SurveyCreateSerializer",
     "SurveyListSerializer",

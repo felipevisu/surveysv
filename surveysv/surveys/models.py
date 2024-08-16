@@ -30,6 +30,10 @@ class Option(OrderedModel):
     )
     goal = models.PositiveIntegerField(blank=True, null=True)
 
+    class Meta:
+        unique_together = ("question", "value")
+        ordering = ["order"]
+
     def __str__(self) -> str:
         return self.title
 

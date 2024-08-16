@@ -30,6 +30,30 @@ def test_create_option(api_client, user, question):
 
 
 @pytest.mark.django_db
+def test_create_option_with_existent_value(api_client, user, question, option_list):
+    api_client.force_authenticate(user=user)
+
+    # Prepare the data for creating a new option
+    data = {
+        "title": "Green",
+        "value": "green",
+    }
+
+    # Send a POST request to create the option
+    response = api_client.post(
+        reverse("option-create", args=[question.id]), data, format="json"
+    )
+
+    # Assert the response status code is 400 (Error)
+    assert response.status_code == 400
+
+    content = response.json()
+    error = content["non_field_errors"][0]
+    message = "An option with value 'green' already exists for this question."
+    assert error == message
+
+
+@pytest.mark.django_db
 def test_update_option(api_client, user, option):
     api_client.force_authenticate(user=user)
 

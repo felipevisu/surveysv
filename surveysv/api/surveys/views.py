@@ -8,7 +8,8 @@ from .serializers import (
     ConditionCreateSerializer,
     ConditionUpdateSerializer,
     OptionBulkDeleteSerializer,
-    OptionSerializer,
+    OptionCreateSerializer,
+    OptionUpdateSerializer,
     QuestionUpdateSerializer,
     SurveyCreateSerializer,
     SurveyListSerializer,
@@ -71,24 +72,26 @@ class QuestionDeleteAPIView(generics.DestroyAPIView):
 
 class OptionCreateAPIView(generics.CreateAPIView):
     queryset = Option.objects.all()
-    serializer_class = OptionSerializer
+    serializer_class = OptionCreateSerializer
 
-    def perform_create(self, serializer: OptionSerializer):
-        question_id = self.kwargs[
-            "question_pk"
-        ]  # Extract survey primary key from the URL
+    def get_serializer_context(self):
+        context = super().get_serializer_context()
+        # Retrieve the question based on the pk in the URL
         try:
-            question = Question.objects.get(pk=question_id)
+            question = Question.objects.get(pk=self.kwargs["question_pk"])
         except Question.DoesNotExist:
-            raise ValidationError(f"Question with id {question_id} does not exist.")
+            raise ValidationError(
+                f"Question with id {self.kwargs['question_pk']} does not exist."
+            )
 
-        # Pass the survey instance to the serializer
-        serializer.save(question=question)
+        # Add the question to the context
+        context["question"] = question
+        return context
 
 
 class OptionUpdateAPIView(generics.UpdateAPIView):
     queryset = Option.objects.all()
-    serializer_class = OptionSerializer
+    serializer_class = OptionUpdateSerializer
     lookup_field = "pk"
 
 
