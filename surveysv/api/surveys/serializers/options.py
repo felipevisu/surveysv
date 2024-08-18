@@ -36,6 +36,19 @@ class OptionBulkDeleteSerializer(serializers.Serializer):
     )
 
     def validate_option_ids(self, value):
+        # Ensure the list is not empty
         if not value:
             raise serializers.ValidationError("This field cannot be empty.")
+
+        # Check if all IDs exist in the database
+        existing_ids = set(
+            Option.objects.filter(id__in=value).values_list("id", flat=True)
+        )
+        non_existent_ids = set(value) - existing_ids
+
+        if non_existent_ids:
+            raise serializers.ValidationError(
+                f"No options found with IDs: {sorted(non_existent_ids)}"
+            )
+
         return value

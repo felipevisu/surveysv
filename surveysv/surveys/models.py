@@ -4,19 +4,17 @@ from ordered_model.models import OrderedModel
 from ..core.models import ModelWithDates
 
 
-class QuestionType:
+class QuestionType(models.TextChoices):
     MULTIPLE_CHOICE = "MULTIPLE_CHOICE"
     SELECT = "SELECT"
     TEXT = "TEXT"
 
-    CHOICES = [(MULTIPLE_CHOICE, "Multiple Choice"), (SELECT, "Select"), (TEXT, "Text")]
-
 
 class Question(ModelWithDates):
     body = models.TextField()
-    type = models.CharField(choices=QuestionType.CHOICES)
-    required = models.BooleanField(blank=True, null=True)
-    reusable = models.BooleanField(blank=True, null=True, default=False)
+    type = models.CharField(choices=QuestionType.choices)
+    required = models.BooleanField(default=False)
+    reusable = models.BooleanField(default=False)
 
     def __str__(self) -> str:
         return f"{self.body} ({self.get_type_display()})"
@@ -28,7 +26,7 @@ class Option(OrderedModel):
     question = models.ForeignKey(
         Question, related_name="options", on_delete=models.CASCADE
     )
-    goal = models.PositiveIntegerField(blank=True, null=True)
+    goal = models.PositiveIntegerField(default=0)
 
     class Meta:
         unique_together = ("question", "value")
@@ -38,18 +36,11 @@ class Option(OrderedModel):
         return self.title
 
 
-class Operator:
+class Operator(models.TextChoices):
     IS_EQUAL = "IS_EQUAL"
     IS_DIFERENT = "IS_DIFERENT"
     CONTAINS = "CONTAINS"
     NOT_CONTAINS = "NOT_CONTAINS"
-
-    CHOICES = [
-        (IS_EQUAL, "Is equal"),
-        (IS_DIFERENT, "Is diferent"),
-        (CONTAINS, "Contains"),
-        (NOT_CONTAINS, "Not contains"),
-    ]
 
 
 class Condition(models.Model):
@@ -59,7 +50,7 @@ class Condition(models.Model):
     conditional_question = models.ForeignKey(
         Question, related_name="conditions", on_delete=models.CASCADE
     )
-    operator = models.CharField(max_length=50, choices=Operator.CHOICES)
+    operator = models.CharField(max_length=50, choices=Operator.choices)
     value = models.TextField()
 
 

@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from .models import Condition, Option, Question, Survey, SurveyQuestion
+from .models import Condition, Option, Question, Survey, SurveyQuestion, SurveyVersion
 
 
 class OptionInline(admin.TabularInline):
@@ -35,3 +35,8 @@ class SurveyAdmin(admin.ModelAdmin):
 class SurveyQuestionAdmin(admin.ModelAdmin):
     list_display = ("survey", "question", "order", "page_number")
     list_filter = ("survey", "page_number")
+
+
+@admin.register(SurveyVersion)
+class SurveyVersionAdmin(admin.ModelAdmin):
+    list_display = ("survey", "version_name", "version_code", "created")
