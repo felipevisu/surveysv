@@ -10,7 +10,7 @@ class OptionInline(admin.TabularInline):
 
 class ConditionInline(admin.TabularInline):
     model = Condition
-    fk_name = "primary_question"
+    fk_name = "conditional_question"
     extra = 0
 
 

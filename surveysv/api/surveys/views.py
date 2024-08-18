@@ -12,6 +12,7 @@ from .serializers import (
     OptionUpdateSerializer,
     QuestionUpdateSerializer,
     SurveyCreateSerializer,
+    SurveyDetailsSerializer,
     SurveyListSerializer,
     SurveyQuestionCreateSerializer,
     SurveyUpdateSerializer,
@@ -27,6 +28,22 @@ class SurveyListAPIView(generics.ListAPIView):
 
     def get_queryset(self):
         return Survey.objects.annotate(question_count=Count("surveyquestion"))
+
+
+class SurveyDetailsAPIView(generics.RetrieveAPIView):
+    queryset = Survey.objects.all()
+    serializer_class = SurveyDetailsSerializer
+    lookup_field = "pk"
+
+    def get_queryset(self):
+        return Survey.objects.select_related().prefetch_related(
+            # Prefetch related questions (SurveyQuestion)
+            "surveyquestion_set__question",
+            # Prefetch conditions for each question
+            "surveyquestion_set__question__conditions",
+            # Prefetch options for each question
+            "surveyquestion_set__question__options",
+        )
 
 
 class SurveyCreateAPIView(generics.CreateAPIView):

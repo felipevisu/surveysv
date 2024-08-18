@@ -6,6 +6,9 @@ urlpatterns = [
     path("", views.SurveyListAPIView.as_view(), name="survey-list"),
     path("create/", views.SurveyCreateAPIView.as_view(), name="survey-create"),
     path("<int:pk>/update/", views.SurveyUpdateAPIView.as_view(), name="survey-update"),
+    path(
+        "<int:pk>/details/", views.SurveyDetailsAPIView.as_view(), name="survey-details"
+    ),
     path("<int:pk>/delete/", views.SurveyDeleteAPIView.as_view(), name="survey-delete"),
     path(
         "questions/<int:survey_pk>/create/",

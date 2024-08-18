@@ -1,4 +1,5 @@
 from .conditions import ConditionCreateSerializer, ConditionUpdateSerializer
+from .details import SurveyDetailsSerializer
 from .options import (
     OptionBulkDeleteSerializer,
     OptionCreateSerializer,
@@ -19,6 +20,7 @@ __all__ = [
     "OptionUpdateSerializer",
     "QuestionUpdateSerializer",
     "SurveyCreateSerializer",
+    "SurveyDetailsSerializer",
     "SurveyListSerializer",
     "SurveyQuestionCreateSerializer",
     "SurveyUpdateSerializer",
