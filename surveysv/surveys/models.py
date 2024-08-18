@@ -1,3 +1,5 @@
+from email.policy import default
+
 from django.db import models
 from ordered_model.models import OrderedModel
 
@@ -26,7 +28,7 @@ class Option(OrderedModel):
     question = models.ForeignKey(
         Question, related_name="options", on_delete=models.CASCADE
     )
-    goal = models.PositiveIntegerField(default=0)
+    goal = models.PositiveIntegerField(null=True, blank=True, default=None)
 
     class Meta:
         unique_together = ("question", "value")
