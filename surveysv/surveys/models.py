@@ -1,5 +1,3 @@
-from typing import Any
-
 from django.db import models
 from ordered_model.models import OrderedModel
 
@@ -81,3 +79,20 @@ class SurveyQuestion(OrderedModel):
     class Meta:
         unique_together = ("survey", "question")
         ordering = ["order"]
+
+
+class SurveyVersion(models.Model):
+    survey = models.ForeignKey(
+        Survey, on_delete=models.CASCADE, related_name="versions"
+    )
+    created = models.DateTimeField(auto_now_add=True)
+    version_name = models.CharField(max_length=25)
+    version_code = models.SlugField(max_length=25)
+    body = models.JSONField()
+
+    class Meta:
+        unique_together = ("survey", "version_code")
+        ordering = ["-created"]
+
+    def __str__(self) -> str:
+        return f"{self.survey.title} - {self.version_code}"

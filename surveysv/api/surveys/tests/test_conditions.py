@@ -67,9 +67,7 @@ def test_create_condition_with_questions_not_in_the_survey(
     assert response.status_code == 400
     content = response.json()
     error = content["non_field_errors"][0]
-    message = (
-        "Primary question What is your favorite color? is not assigned to survey 2."
-    )
+    message = "Primary question What is your favorite color? (Multiple Choice) is not assigned to survey 2."
     assert error == message
 
 

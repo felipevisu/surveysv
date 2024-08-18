@@ -1,6 +1,13 @@
 from rest_framework import serializers
 
-from surveysv.surveys.models import Condition, Option, Question, Survey, SurveyQuestion
+from surveysv.surveys.models import (
+    Condition,
+    Option,
+    Question,
+    Survey,
+    SurveyQuestion,
+    SurveyVersion,
+)
 
 
 class ConditionSerializer(serializers.ModelSerializer):
@@ -32,11 +39,18 @@ class SurveyQuestionSerializer(serializers.ModelSerializer):
         fields = ["id", "order", "page_number", "question"]
 
 
+class SurveyVersionSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = SurveyVersion
+        fields = ["id", "created", "version_name", "version_code"]
+
+
 class SurveyDetailsSerializer(serializers.ModelSerializer):
     questions = SurveyQuestionSerializer(
         many=True, read_only=True, source="surveyquestion_set"
     )
+    versions = SurveyVersionSerializer(many=True, read_only=True)
 
     class Meta:
         model = Survey
-        fields = ["id", "title", "created", "updated", "questions"]
+        fields = ["id", "title", "created", "updated", "questions", "versions"]

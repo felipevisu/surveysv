@@ -1,7 +1,7 @@
 import pytest
 from django.urls import reverse
 
-from surveysv.surveys.models import Question, Survey, SurveyQuestion
+from surveysv.surveys.models import Question, Survey, SurveyQuestion, SurveyVersion
 
 
 @pytest.mark.django_db
@@ -96,3 +96,38 @@ def test_delete_survey(api_client, user, survey):
 
     # Assert the survey was deleted
     assert Survey.objects.count() == 0
+
+
+@pytest.mark.django_db
+def test_delete_survey_version(api_client, user, survey_version):
+    api_client.force_authenticate(user=user)
+
+    # Send a DELETE request to delete the survey
+    response = api_client.delete(
+        reverse(
+            "survey-version-delete",
+            args=[survey_version.survey.id, survey_version.version_code],
+        )
+    )
+
+    # Assert the response status code is 204 (No Content)
+    assert response.status_code == 204
+
+    # Assert the survey was deleted
+    assert SurveyVersion.objects.count() == 0
+
+
+@pytest.mark.django_db
+def test_delete_nonexistent_survey_version(api_client, user, survey_version):
+    api_client.force_authenticate(user=user)
+
+    # Send a DELETE request to delete the survey
+    response = api_client.delete(
+        reverse(
+            "survey-version-delete",
+            args=[0, survey_version.version_code],
+        )
+    )
+
+    # Check that the response status code is 404 Not Found
+    assert response.status_code == 404

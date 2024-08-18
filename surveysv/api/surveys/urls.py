@@ -9,6 +9,21 @@ urlpatterns = [
     path(
         "<int:pk>/details/", views.SurveyDetailsAPIView.as_view(), name="survey-details"
     ),
+    path(
+        "<int:survey_pk>/versions/generate/",
+        views.SurveyGenerateVersionAPIView.as_view(),
+        name="survey-version-generate",
+    ),
+    path(
+        "<int:survey_pk>/versions/<slug:version_code>/",
+        views.SurveyVersionDetailView.as_view(),
+        name="survey-version-detail",
+    ),
+    path(
+        "<int:survey_pk>/versions/<slug:version_code>/delete/",
+        views.SurveyVersionDeleteAPIView.as_view(),
+        name="survey-version-delete",
+    ),
     path("<int:pk>/delete/", views.SurveyDeleteAPIView.as_view(), name="survey-delete"),
     path(
         "questions/<int:survey_pk>/create/",

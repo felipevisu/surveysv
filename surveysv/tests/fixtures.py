@@ -2,7 +2,7 @@ import pytest
 from django.contrib.auth.models import User
 from rest_framework.test import APIClient
 
-from surveysv.surveys.models import Condition, Option, Question, Survey
+from surveysv.surveys.models import Condition, Option, Question, Survey, SurveyVersion
 
 
 @pytest.fixture
@@ -18,6 +18,13 @@ def user():
 @pytest.fixture
 def survey():
     return Survey.objects.create(title="Survey")
+
+
+@pytest.fixture
+def survey_version(survey):
+    return SurveyVersion.objects.create(
+        survey=survey, version_name="Version 1", version_code="version-1", body={}
+    )
 
 
 @pytest.fixture

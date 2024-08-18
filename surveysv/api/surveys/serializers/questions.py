@@ -1,6 +1,7 @@
 from rest_framework import serializers
+from rest_framework.exceptions import NotFound
 
-from surveysv.surveys.models import Condition, Option, Question, SurveyQuestion
+from surveysv.surveys.models import Condition, Option, Question, Survey, SurveyQuestion
 
 
 class ConditionSerializer(serializers.ModelSerializer):
@@ -39,6 +40,17 @@ class SurveyQuestionCreateSerializer(serializers.ModelSerializer):
             "options",
             "conditions",
         ]
+
+    def validate(self, data):
+        survey_pk = self.context["survey_pk"]
+        try:
+            survey = Survey.objects.get(pk=survey_pk)
+        except Survey.DoesNotExist:
+            raise NotFound(f"Survey with id {survey_pk} does not exist.")
+
+        # Pass the survey instance to the serializer
+        data["survey"] = survey
+        return data
 
     def validate_conditions(self, conditions):
         for condition in conditions:

@@ -1,9 +1,16 @@
 from django.db.models import Count
 from rest_framework import filters, generics, status
-from rest_framework.exceptions import ValidationError
+from rest_framework.exceptions import NotFound, ValidationError
 from rest_framework.response import Response
 
-from ...surveys.models import Condition, Option, Question, Survey, SurveyQuestion
+from ...surveys.models import (
+    Condition,
+    Option,
+    Question,
+    Survey,
+    SurveyQuestion,
+    SurveyVersion,
+)
 from .serializers import (
     ConditionCreateSerializer,
     ConditionUpdateSerializer,
@@ -13,9 +20,11 @@ from .serializers import (
     QuestionUpdateSerializer,
     SurveyCreateSerializer,
     SurveyDetailsSerializer,
+    SurveyGenerateVersionSerializer,
     SurveyListSerializer,
     SurveyQuestionCreateSerializer,
     SurveyUpdateSerializer,
+    SurveyVersionSerializer,
 )
 
 
@@ -37,18 +46,62 @@ class SurveyDetailsAPIView(generics.RetrieveAPIView):
 
     def get_queryset(self):
         return Survey.objects.select_related().prefetch_related(
-            # Prefetch related questions (SurveyQuestion)
+            "versions",
             "surveyquestion_set__question",
-            # Prefetch conditions for each question
             "surveyquestion_set__question__conditions",
-            # Prefetch options for each question
             "surveyquestion_set__question__options",
         )
+
+
+class SurveyVersionDetailView(generics.RetrieveAPIView):
+    serializer_class = SurveyVersionSerializer
+    lookup_field = "version_code"
+
+    def get_object(self):
+        survey_pk = self.kwargs["survey_pk"]
+        version_code = self.kwargs["version_code"]
+        try:
+            return SurveyVersion.objects.get(
+                survey_id=survey_pk, version_code=version_code
+            )
+        except SurveyVersion.DoesNotExist:
+            raise NotFound(
+                f"SurveyVersion with survey_pk={survey_pk} and version_code={version_code} not found."
+            )
 
 
 class SurveyCreateAPIView(generics.CreateAPIView):
     queryset = Survey.objects.all()
     serializer_class = SurveyCreateSerializer
+
+
+class SurveyGenerateVersionAPIView(generics.CreateAPIView):
+    serializer_class = SurveyGenerateVersionSerializer
+
+    def get_serializer_context(self):
+        context = super().get_serializer_context()
+        # Add the survey to the context
+        context["survey_pk"] = self.kwargs["survey_pk"]
+        return context
+
+
+class SurveyVersionDeleteAPIView(generics.DestroyAPIView):
+    queryset = SurveyVersion.objects.all()
+
+    def get_object(self):
+        survey_pk = self.kwargs["survey_pk"]
+        version_code = self.kwargs["version_code"]
+
+        try:
+            survey_version = SurveyVersion.objects.get(
+                survey_id=survey_pk, version_code=version_code
+            )
+        except SurveyVersion.DoesNotExist:
+            raise NotFound(
+                f"SurveyVersion with survey_pk={survey_pk} and version_code={version_code} not found."
+            )
+
+        return survey_version
 
 
 class SurveyUpdateAPIView(generics.UpdateAPIView):
@@ -65,15 +118,11 @@ class SurveyQuestionCreateAPIView(generics.CreateAPIView):
     queryset = SurveyQuestion.objects.all()
     serializer_class = SurveyQuestionCreateSerializer
 
-    def perform_create(self, serializer: SurveyQuestionCreateSerializer):
-        survey_id = self.kwargs["survey_pk"]  # Extract survey primary key from the URL
-        try:
-            survey = Survey.objects.get(pk=survey_id)
-        except Survey.DoesNotExist:
-            raise ValidationError(f"Survey with id {survey_id} does not exist.")
-
-        # Pass the survey instance to the serializer
-        serializer.save(survey=survey)
+    def get_serializer_context(self):
+        context = super().get_serializer_context()
+        # Add the question to the context
+        context["survey_pk"] = self.kwargs["survey_pk"]
+        return context
 
 
 class QuestionUpdateAPIView(generics.UpdateAPIView):
@@ -93,16 +142,8 @@ class OptionCreateAPIView(generics.CreateAPIView):
 
     def get_serializer_context(self):
         context = super().get_serializer_context()
-        # Retrieve the question based on the pk in the URL
-        try:
-            question = Question.objects.get(pk=self.kwargs["question_pk"])
-        except Question.DoesNotExist:
-            raise ValidationError(
-                f"Question with id {self.kwargs['question_pk']} does not exist."
-            )
-
         # Add the question to the context
-        context["question"] = question
+        context["question_pk"] = self.kwargs["question_pk"]
         return context
 
 

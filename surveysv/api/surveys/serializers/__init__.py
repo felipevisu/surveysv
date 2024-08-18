@@ -8,8 +8,10 @@ from .options import (
 from .questions import QuestionUpdateSerializer, SurveyQuestionCreateSerializer
 from .surveys import (
     SurveyCreateSerializer,
+    SurveyGenerateVersionSerializer,
     SurveyListSerializer,
     SurveyUpdateSerializer,
+    SurveyVersionSerializer,
 )
 
 __all__ = [
@@ -20,8 +22,10 @@ __all__ = [
     "OptionUpdateSerializer",
     "QuestionUpdateSerializer",
     "SurveyCreateSerializer",
+    "SurveyGenerateVersionSerializer",
     "SurveyDetailsSerializer",
     "SurveyListSerializer",
     "SurveyQuestionCreateSerializer",
     "SurveyUpdateSerializer",
+    "SurveyVersionSerializer",
 ]
