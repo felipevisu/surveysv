@@ -41,8 +41,9 @@ INSTALLED_APPS = [
     # libs
     "rest_framework",
     # app
-    "surveysv.surveys",
     "surveysv.core",
+    "surveysv.responses",
+    "surveysv.surveys",
 ]
 
 MIDDLEWARE = [

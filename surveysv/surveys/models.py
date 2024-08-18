@@ -1,3 +1,5 @@
+from typing import Any
+
 from django.db import models
 from ordered_model.models import OrderedModel
 
@@ -19,7 +21,7 @@ class Question(ModelWithDates):
     reusable = models.BooleanField(blank=True, null=True, default=False)
 
     def __str__(self) -> str:
-        return self.body
+        return f"{self.body} ({self.get_type_display()})"
 
 
 class Option(OrderedModel):
