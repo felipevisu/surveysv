@@ -87,6 +87,7 @@ class SurveyGenerateVersionSerializer(serializers.Serializer):
         # Serialize the survey data using SurveyDetailSerializer
         survey_data_serializer = SurveyDetailsSerializer(survey)
         survey_data = survey_data_serializer.data
+        del survey_data["versions"]
 
         # Create the SurveyVersion
         survey_version = SurveyVersion.objects.create(

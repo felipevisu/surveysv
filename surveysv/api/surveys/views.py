@@ -104,6 +104,31 @@ class SurveyVersionDeleteAPIView(generics.DestroyAPIView):
         return survey_version
 
 
+class SurveyLatestVersionAPIView(generics.RetrieveAPIView):
+    serializer_class = SurveyVersionSerializer
+
+    def get_object(self):
+        survey_pk = self.kwargs["survey_pk"]
+
+        # Retrieve the survey to ensure it exists
+        try:
+            survey = Survey.objects.get(pk=survey_pk)
+        except Survey.DoesNotExist:
+            raise NotFound(f"Survey with id {survey_pk} not found.")
+
+        # Retrieve the latest SurveyVersion for the given survey
+        latest_version = (
+            SurveyVersion.objects.filter(survey_id=survey_pk)
+            .order_by("-created")
+            .first()
+        )
+
+        if not latest_version:
+            raise NotFound(f"No versions found for Survey with id {survey_pk}.")
+
+        return latest_version
+
+
 class SurveyUpdateAPIView(generics.UpdateAPIView):
     queryset = Survey.objects.all()
     serializer_class = SurveyUpdateSerializer

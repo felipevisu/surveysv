@@ -15,6 +15,11 @@ urlpatterns = [
         name="survey-version-generate",
     ),
     path(
+        "<int:survey_pk>/versions/latest/",
+        views.SurveyLatestVersionAPIView.as_view(),
+        name="survey-version-latest",
+    ),
+    path(
         "<int:survey_pk>/versions/<slug:version_code>/",
         views.SurveyVersionDetailView.as_view(),
         name="survey-version-detail",
