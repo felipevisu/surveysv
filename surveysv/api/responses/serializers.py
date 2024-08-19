@@ -75,7 +75,6 @@ class ResponseCreateSerializer(serializers.ModelSerializer):
     def validate(self, data):
         survey = data.get("survey")
         answers = data.get("answers")
-        body = answer.get("body")
         answers_dict = {answer["question"].id: answer["body"] for answer in answers}
 
         # Check if the survey exists
@@ -85,6 +84,7 @@ class ResponseCreateSerializer(serializers.ModelSerializer):
         # Check each answer
         for answer in answers:
             question = answer.get("question")
+            body = answer.get("body")
             # Check if the question exists
             if not Question.objects.filter(pk=question.id).exists():
                 raise ValidationError(f"Question with id {question.id} does not exist.")
@@ -98,6 +98,13 @@ class ResponseCreateSerializer(serializers.ModelSerializer):
             # Check if the option's goal is reached (if applicable)
             if question.type in ["MULTIPLE_CHOICE", "SELECT"]:
                 self._check_option_goal(question, body)
+
+            # Check if the question has conditions and if they are satisfied
+            if question.conditions.exists():
+                if not self._check_condition_satisfaction(question, answers_dict):
+                    raise ValidationError(
+                        f"Condition for question with id {question.id} is not satisfied, so an answer should not be provided."
+                    )
 
             # Check if the required question has an empty body (if no condition or condition is satisfied)
             if question.required:
